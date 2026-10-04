@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""H3YQ-onlyno999 音频驱动派发器 — workflow 2101416149702504449（2026-10-04 用户拍板替换旧 2106642 线）.
+"""H3YQ-onlyno999 音频驱动派发器 — workflow 2106756389191372802 = user-owned copy of 2101416149702504449
+with node 131 (SaveImage frame dump) removed/muted (2026-10-04, user-saved, probe-verified).
 
 Graph-pinned mapping (from executed-graph metadata + two paid tests, see
 references/workflow_2101416_map.md):
@@ -24,7 +25,7 @@ sys.path.insert(0, "/opt/hatch/skills/skill-creator/bin")
 from dynamic_credentials import add_surrogate_to_request
 
 BASE = "https://www.runninghub.cn"
-WF = "2101416149702504449"
+WF = "2106756389191372802"
 ap = argparse.ArgumentParser()
 ap.add_argument("--duration", type=float, required=True, help="seconds, must equal drive audio length")
 ap.add_argument("--seed", type=int, default=20261004)
@@ -84,7 +85,7 @@ for path, node, field in [(a.ref0, "72", "image"), (a.ref1, "101", "image"), (a.
         nodes.append({"nodeId": node, "fieldName": field, "fieldValue": fn})
 
 payload = {"workflowId": WF, "nodeInfoList": nodes, "instanceType": "default", "usePersonalQueue": False}
-dump = {"uploaded": uploaded, "mapping": "2101416149702504449 graph-pinned 2026-10-04 (79.prompt/73/78/62/72/101/74; 84 untouched)"}
+dump = {"uploaded": uploaded, "mapping": "2106756389191372802 (copy of 2101416149702504449, 131 removed) graph-pinned 2026-10-04 (79.prompt/73/78/62/72/101/74; 84 untouched)"}
 tid = None
 for ep in ["/task/openapi/create", f"/openapi/v2/run/workflow/{WF}"]:
     r = post_json(ep, payload)
