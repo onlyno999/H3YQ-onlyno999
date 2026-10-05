@@ -1,0 +1,9 @@
+(Picture 1) is the opening frame of this video. (Picture 2) is the character sheet of the man in (Picture 1); his face and outfit must match (Picture 2) exactly.
+The man sits on the sofa in the café as in (Picture 1), holding a microphone and singing, driven by (Audio 1). The camera holds this framing with a very slow, gentle push-in.
+Overall soundscape: the man's singing voice with quiet café ambience.
+Non-diegetic music: N/A.
+
+【使用说明】
+- 全文不许出现 subtitles / captions / text / watermark / logo 等任何文字类词（防反向烧字，铁律1）。
+- 机位已由 (Picture 1) 锚点照片决定，提示词不再描述场景与脸。
+- 场景不是咖啡厅/沙发时，只改第二句的场景名词，其余照抄。
