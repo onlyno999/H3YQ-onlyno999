@@ -139,3 +139,19 @@ description: 音频驱动专用生产 Agent（YQ＝音频驱动线）：用户�
 9. **验证案例**（档案见 `references/case_2026-10-06_onetake_source_method.md`）：
    - 《老街茶馆双人唱》50.02s：5 段（9＋8＋6＋15＋12），尾帧直喂＋同种子＋背景人物逐桌写死，成片 `老街茶馆双人唱_完整版.mp4`。
    - 《踏青唱歌》27.23s v8：2 段（12.5＋14.73），帧数账剪尾＋锚点取剪后末帧＋首帧动作全描绘，成片 `踏青唱歌_完整版_v8.mp4`，用户评「完美，以后就这个套路搞」。
+
+## 12. 外部交棒法（不走内循环·尾帧模糊交棒，2026-10-08/09 咖啡厅 EP3 实测跑通）
+
+适用于：**不用工作流内循环、外部逐段派发**的拼接生产（咖啡厅夫妻唱歌栏目现行测试法）。与第 11 节的区别只在交棒图处理与提示词定性两处（见下文标注），其余（同种子、整秒切段、原声整轨、剔第 0 帧硬拼、交付规格）与第 11 节一致。
+
+1. **切段**：Standard 派发；**单段 ≤10 秒**（实证：12 秒在 Standard/736 档 SamplerCustomAdvanced 必 OOM，两挂；10 秒为上限）。音频先修成整秒，切点尽量落在整句歌词唱完之后；末段不足 10 秒用 apad 补静音到 10.000，补出的尾巴在提示词里写成收尾动作。
+2. **卡槽（用户 2026-10-08 21:15 亲定）**：第 1 段：卡槽 1（72）＝双人三视图上下拼卡，卡槽 2（101）＝场景拼版。第 2 段起：**卡槽 1＝上一段尾帧的交棒图（见第 3 条）；卡槽 2＝竖叠板：上＝双人三视图拼卡、下＝场景拼版**。
+3. **交棒图处理（定版）**：截上一段**实际最后一帧**，本地只做**高斯模糊、半径 R3**（PIL GaussianBlur radius=3），**不做 36 色平涂/量化**。实证：平涂把颜色咔成色板、整段偏色（饱和掉约 3–5 点）；纯模糊只改文件不改颜色。半径是硬门槛：**R2 不够**（脸还读得出内容，模型把交棒图当真开场复现）；R3 起脸读不出内容，才合格。R5/R7 亦可（只影响模型回神速度），定版取 R3。
+4. **提示词定性（本法核心，2026-10-09 用户拍板「果然是提示词的问题」）**：
+   - (Picture 1) 必须定性为 **placement guide（站位图）**：原文照抄——「(Picture 1) is a placement guide — a softly blurred frame of the cafe, kept only to show where the couple sit, their pose, the framing, the colours and the objects on the table: …（逐项描绘尾帧里的姿势）」
+   - 紧接着写死不复制：原文照抄——「Nothing in the finished video is copied from it: the footage is sharp and clear from the first frame, the blur exists only inside this guide, and no face is ever taken from it — the faces in it are blurred beyond reading. The two people themselves follow (Picture 2) above all else: …」
+   - **开场段严禁把 (Picture 1) 说成首帧/开场瞬间**：禁写「opens exactly on the moment in (Picture 1)」类锚定句（与第 11 节第 6 条①相反——本法内该写法＝翻车根源）。开场直接写剧情状态：原文照抄起头——「The clip begins mid-song: the couple are seated side by side at the small round table by the windows — …（当下姿势逐项写清） — and he simply sings on from there, without any restart.」
+   - **病理与实证（清晰度＝拉普拉斯方差，第 1 段尾部约 101–115）**：把交棒图描述成「同一镜头的模糊帧」＋锚定开场 → 模型把交棒图当第一帧复现：第 0 帧清晰度仅 7–8、约 1 秒爬坡回神（成片接缝处肉眼可见「模糊了一下」），且稳态只到 75–94；改用站位图定性＋开场不提 (Picture 1) 后：第 0 帧 112–121、全程 99–121 无爬坡，第 2、3 段连续交棒复现成功。糊度单变量对照（同 v6 词）：R2 → 第 0 帧 10、稳态 77–81（糊复发）；R3 → 第 0 帧 112、全程约 100。
+   - 机理（用户定性）：提示词管「态度」、糊度管「它认不认得出」——图被描述成镜头，模型就复现它；图被定性为示意图且脸不可读，模型才照三视图新画。
+5. **拼片**：同第 11 节第 7 条（续接段剔第 0 帧、硬切、原声整轨一刀不剪、交付规格照第 6 节）。实证三段（10＋10＋10）接缝无糊脉冲、无偏色台阶、无位置跳动（相位相关量首帧偏移 0）。
+6. **验证案例**：咖啡厅 EP3（26.17s 新歌）三段完整版 `咖啡厅新歌_完整版.mp4`（29.92s），工作区 `~/workspace/cafe_ep3/`，胜出提示词全文 `work/prompt_s2b.txt`（第 2 段）/`work/prompt_s3.txt`（第 3 段）。
