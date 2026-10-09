@@ -146,12 +146,13 @@ description: 音频驱动专用生产 Agent（YQ＝音频驱动线）：用户�
 
 1. **切段**：Standard 派发；**单段 ≤10 秒**（实证：12 秒在 Standard/736 档 SamplerCustomAdvanced 必 OOM，两挂；10 秒为上限）。音频先修成整秒，切点尽量落在整句歌词唱完之后；末段不足 10 秒用 apad 补静音到 10.000，补出的尾巴在提示词里写成收尾动作。
 2. **卡槽（用户 2026-10-08 21:15 亲定）**：第 1 段：卡槽 1（72）＝双人三视图上下拼卡，卡槽 2（101）＝场景拼版。第 2 段起：**卡槽 1＝上一段尾帧的交棒图（见第 3 条）；卡槽 2＝竖叠板：上＝双人三视图拼卡、下＝场景拼版**。
-3. **交棒图处理（定版）**：截上一段**实际最后一帧**，本地只做**高斯模糊、半径 R3**（PIL GaussianBlur radius=3），**不做 36 色平涂/量化**。实证：平涂把颜色咔成色板、整段偏色（饱和掉约 3–5 点）；纯模糊只改文件不改颜色。半径是硬门槛：**R2 不够**（脸还读得出内容，模型把交棒图当真开场复现）；R3 起脸读不出内容，才合格。R5/R7 亦可（只影响模型回神速度），定版取 R3。
+3. **交棒图处理（定版，2026-10-09 14:17 用户令改）**：截上一段**实际最后一帧**，本地只做**高斯模糊、半径 R7**（PIL GaussianBlur radius=7），**不做 36 色平涂/量化**。实证：平涂把颜色咔成色板、整段偏色（饱和掉约 3–5 点）；纯模糊只改文件不改颜色。半径沿革：R2 不够（脸还读得出、模型当真开场复现）；R3 曾为定版（三段短链合格）；**但长链后段尾帧里脸变大，R3 糊后仍残留可读脸形，模型顺着已漂移的脸往下抄、逐段偏脸**（刹车踏板 MV 第 8/9 段实证）——改 R7 后脸被彻底灭掉、只能回三视图重画，漂移修掉。**以后一律 R7，不再分段调档。**
 4. **提示词定性（本法核心，2026-10-09 用户拍板「果然是提示词的问题」）**：
    - (Picture 1) 必须定性为 **placement guide（站位图）**：原文照抄——「(Picture 1) is a placement guide — a softly blurred frame of the cafe, kept only to show where the couple sit, their pose, the framing, the colours and the objects on the table: …（逐项描绘尾帧里的姿势）」
    - 紧接着写死不复制：原文照抄——「Nothing in the finished video is copied from it: the footage is sharp and clear from the first frame, the blur exists only inside this guide, and no face is ever taken from it — the faces in it are blurred beyond reading. The two people themselves follow (Picture 2) above all else: …」
+   - **分工三句写死（用户 2026-10-09 13:48 亲定，逐句入词）**：①脸的唯一来源——「His face and appearance follow the character reference in (Picture 2) at 1:1 — that is the only source for his face.」；②交棒图只管姿势——「(Picture 1) is consulted only for the pose and the position — nothing else is taken from it, least of all the face.」；③场景认叠板下格——「The setting follows the scene board in the lower panel of (Picture 2).」
    - **开场段严禁把 (Picture 1) 说成首帧/开场瞬间**：禁写「opens exactly on the moment in (Picture 1)」类锚定句（与第 11 节第 6 条①相反——本法内该写法＝翻车根源）。开场直接写剧情状态：原文照抄起头——「The clip begins mid-song: the couple are seated side by side at the small round table by the windows — …（当下姿势逐项写清） — and he simply sings on from there, without any restart.」
    - **病理与实证（清晰度＝拉普拉斯方差，第 1 段尾部约 101–115）**：把交棒图描述成「同一镜头的模糊帧」＋锚定开场 → 模型把交棒图当第一帧复现：第 0 帧清晰度仅 7–8、约 1 秒爬坡回神（成片接缝处肉眼可见「模糊了一下」），且稳态只到 75–94；改用站位图定性＋开场不提 (Picture 1) 后：第 0 帧 112–121、全程 99–121 无爬坡，第 2、3 段连续交棒复现成功。糊度单变量对照（同 v6 词）：R2 → 第 0 帧 10、稳态 77–81（糊复发）；R3 → 第 0 帧 112、全程约 100。
    - 机理（用户定性）：提示词管「态度」、糊度管「它认不认得出」——图被描述成镜头，模型就复现它；图被定性为示意图且脸不可读，模型才照三视图新画。
 5. **拼片**：同第 11 节第 7 条（续接段剔第 0 帧、硬切、原声整轨一刀不剪、交付规格照第 6 节）。实证三段（10＋10＋10）接缝无糊脉冲、无偏色台阶、无位置跳动（相位相关量首帧偏移 0）。
-6. **验证案例**：咖啡厅 EP3（26.17s 新歌）三段完整版 `咖啡厅新歌_完整版.mp4`（29.92s），工作区 `~/workspace/cafe_ep3/`，胜出提示词全文 `work/prompt_s2b.txt`（第 2 段）/`work/prompt_s3.txt`（第 3 段）。
+6. **验证案例**：咖啡厅 EP3（26.17s 新歌）三段完整版 `咖啡厅新歌_完整版.mp4`（29.92s），工作区 `~/workspace/cafe_ep3/`，胜出提示词全文 `work/prompt_s2b.txt`（第 2 段）/`work/prompt_s3.txt`（第 3 段）。刹车踏板之歌 MV（86.49s 歌曲、9 段、刁哥主演，工作区 `~/workspace/brake_mv/`）：前 7 段 R3 平顺，第 8/9 段脸型漂移，R7 重派后脸与三视图对齐、质检 PASS，成片 `百万豪车刹车之歌_MV完整版.mp4`（89.67s）——此案即第 3 条改 R7 的实证来源。
