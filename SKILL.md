@@ -121,6 +121,7 @@ description: 音频驱动专用生产 Agent（YQ＝音频驱动线）：用户�
 - `scripts/make_headshot.py`：单人大头图裁切器（单人戏 Node 101 用：裁定妆卡大头格）。
 - `scripts/mosaic_face.py`：尾帧脸部打码器（**已封存停用，只作历史**——现行总法不打码、不切头，用户 2026-10-05 终定；不许再按此脚本派发）。
 - `scripts/query_task.py`：按 taskId 查任务状态/失败原因（排障用）。
+- `workflows/`：内循环图本体——`数字人内循环_插件版v20_平滑加重_v20261030.json` 为现行定版（见 §13），`数字人内循环_插件版v10_切片提前22帧_v20261029.json` 为基线。
 
 ### 尖括号标签禁用（2026-10-05 实证）
 - 提示词里的媒体标签只能用圆括号 (Audio 1)/(Picture N)。写成尖括号 <Audio 1> 会触发节点 76 的严格标签校验报错（ValueError: <Audio 1> is not connected），整单失败。
